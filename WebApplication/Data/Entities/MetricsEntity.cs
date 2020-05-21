@@ -29,5 +29,8 @@ namespace WebApplication.Data.Entities
 
         [ForeignKey("WeeklyStatisticsID")]
         public Nullable<int> W_S_ID { get; set; }
+
+        [ForeignKey("RoomID")]
+        public int R_ID { get; set; }
     }
 }

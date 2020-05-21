@@ -12,12 +12,13 @@ namespace WebApplication.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         public DbSet<MetricsEntity> Metrics { get; set; }
-        public DbSet<RecommendedLevelsEntity> RecommendedLevels { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
+   
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<RecommendedLevelsEntity>()
-                .HasNoKey();
+            /*builder.Entity<RecommendedLevelsEntity>()
+                .HasNoKey();*/
         }
 
     }

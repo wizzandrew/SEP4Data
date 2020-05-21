@@ -27,22 +27,11 @@ namespace WebApplication.Controllers
         {
             MetricsEntity me = await repository.getLastUpdatedMetrics();
 
-            //returning Metrics given data from MetricsEntity
-            if (me != null) { 
-                Metrics metrics = new Metrics
-                {
-                MetricsID = me.MetricsID,
-                Humidity = me.Humidity,
-                Temperature = me.Temperature,
-                Noise = me.Noise,
-                CO2 = me.CO2,
-                };
+            Metrics metrics;
+            
+            if (me != null) {
 
-                if (me.LastUpdated.HasValue)
-                {
-                    metrics.LastUpdated = (DateTime)me.LastUpdated;
-                }
-
+                metrics = Metrics.getMetricsFromEntity(me);
                 return Ok(metrics);
             }
             else
@@ -59,23 +48,11 @@ namespace WebApplication.Controllers
         {
             MetricsEntity me = await repository.getMetricsById(id);
 
-            //returning Metrics given data from MetricsEntity
+            Metrics metrics;
+
             if (me != null)
             {
-                Metrics metrics = new Metrics
-                {
-                    MetricsID = me.MetricsID,
-                    Humidity = me.Humidity,
-                    Temperature = me.Temperature,
-                    Noise = me.Noise,
-                    CO2 = me.CO2,
-                };
-
-                if (me.LastUpdated.HasValue)
-                {
-                    metrics.LastUpdated = (DateTime)me.LastUpdated;
-                }
-
+                metrics = Metrics.getMetricsFromEntity(me);
                 return Ok(metrics);
             }
             else

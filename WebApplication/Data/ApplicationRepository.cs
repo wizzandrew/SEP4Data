@@ -34,14 +34,26 @@ namespace WebApplication.Data
         //MetricsController---------------------------------------------------------------------------
 
 
-        //RecommendedLevelsController-----------------------------------------------------------------
+        //StatisticsController----------------------------------------------------------------------------
 
-        public async Task<RecommendedLevelsEntity> GetRecommendedLevels()
+        public async Task<List<MetricsEntity>> getMetricsForTimePeriod(DateTime start, DateTime end)
         {
-            //getting RecommendedLevelsEntity 
-            return (await _context.RecommendedLevels.ToListAsync()).ElementAt(0);
+            return await _context.Metrics.Where(m =>  m.LastUpdated.Value >= start &&
+                                                      m.LastUpdated.Value <= end).ToListAsync();
+            
         }
 
-        //RecommendedLevelsController-----------------------------------------------------------------
+        //StatisticsController-----------------------------------------------------------------------------
+
+
+        //UserController----------------------------------------------------------------------------
+
+        public async Task<UserEntity> GetUserEntity(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(email));
+        }
+
+        //UserController----------------------------------------------------------------------------
+
     }
 }
