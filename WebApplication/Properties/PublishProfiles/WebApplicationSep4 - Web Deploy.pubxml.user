@@ -8,4 +8,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <TimeStampOfAssociatedLegacyPublishXmlFile />
     <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAABljBkxYRECQxYUE8CeowAAAAAACAAAAAAAQZgAAAAEAACAAAAAPkUPTOvDtCKwbjYQaTuNVMhvaapKO5UlCbbpp0XyyMwAAAAAOgAAAAAIAACAAAAAzp7vLENejDogQ/0NYj+aBs1uIo9eVCOA6AhOFdVsYmIAAAAC76tgbxWcNq1+Tc+LJw8ZuAno6OzhStbh/yd7moO+M1iyZMUa8HrPyT+7WTjc11pwPl1Hdxc3qvHeAPiHTH+RcYOdeEZB2/OGSyfFw6bCxpoytDuBzHYeQ43cmiBLTOEMxcidggSXsBNsqGZoQkrmoojzdC9Qyf1QS/fr5+6lk6kAAAADPHGOGx7x8LWDyeHnD1noHU78jD6KAFgfPCd+K8lYgyzQCCGsLfZXzFeKTlsGws8sxwakcSyeEBANkUxQSBp4z</EncryptedPassword>
   </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="SEP4Database">
+      <Value>Data Source = sepfour.database.windows.net%3b Initial Catalog = SEP4%3b Persist Security Info=False%3b User ID = superuser%3b Password = 28052020Ul%3b MultipleActiveResultSets=False%3b Encrypt=True%3bTrustServerCertificate=False%3bConnect Timeout=30</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
 </Project>
