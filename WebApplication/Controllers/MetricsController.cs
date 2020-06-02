@@ -43,22 +43,6 @@ namespace WebApplication.Controllers
 
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Metrics>> onGet(int id)
-        {
-            MetricsEntity me = await repository.getMetricsById(id);
 
-            Metrics metrics;
-
-            if (me != null)
-            {
-                metrics = Metrics.getMetricsFromEntity(me);
-                return Ok(metrics);
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
     }
 }

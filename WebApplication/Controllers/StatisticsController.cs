@@ -23,14 +23,17 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("length")]
-        public async Task<int> OnGetLength([FromQuery]DateTime start, [FromQuery]DateTime end)
+        public async Task<double> OnGetLength([FromQuery]DateTime start, [FromQuery]DateTime end)
         {
             List<MetricsEntity> entities = await repository.getMetricsForTimePeriod(start, end);
 
             return entities.Count;
+
+
+
         }
 
-        [HttpGet]
+        [HttpGet("weekly")]
         public async Task<ActionResult<WeeklyStatistics>> OnGetWeekly([FromQuery]DateTime start, [FromQuery]DateTime end)
         {
 
@@ -62,7 +65,7 @@ namespace WebApplication.Controllers
             }
         }
 
-        [HttpGet("monthly")]
+        /*[HttpGet("monthly")]
 
         public async Task<ActionResult<MonthlyStatistics>> OnGetMonthly([FromQuery]DateTime start, [FromQuery]DateTime end)
         {
@@ -132,109 +135,72 @@ namespace WebApplication.Controllers
             {
                 return BadRequest();
             }
-        }
+        }*/
 
         private async Task<WeeklyStatistics> GetWeeklyStatistics(DateTime start, DateTime end)
         {
-            WeeklyStatistics statistics;
+            WeeklyStatistics statistics; //return final object
+            double[][] metrics; //future metrics for weekly statistics
+            DateTime currentDate; //hold current date
+            int stepMetrics; //metricses in each step
+            int currentStep; //current step
+            int steps; //days specified in the week period
 
             //getting all metrics entities from db based on start and end dates
             List<MetricsEntity> entities = await repository.getMetricsForTimePeriod(start, end);
 
             if(entities.Count > 0)
             {
-                //future metrics for weekly statistics
-                double[][] metrics = new double[7][];
-
                 //initializing metrics as jagged array
+                metrics = new double[7][];
                 for (int i = 0; i < metrics.Length; i++)
                 {
                     metrics[i] = new double[4];
                 }
 
-                //temp list for holding measurements of one day
-                List<Metrics> temp = new List<Metrics>();
-
-                //day for comparison of current day and day of entities from db
+                //date for comparison of current day and month of entities from db
                 //based on the same day metrics entities will be loaded to temp
-                int day = entities[0].LastUpdated.Value.Day;
+                currentDate = start;
 
-                for (int i = 0; i < entities.Count; i++)
+                //initializing steps
+                stepMetrics = 0;
+                currentStep = 0;
+                steps = (end - start).Days + 1;
+
+                while(currentStep < steps)
                 {
-                    if (entities[i].LastUpdated.Value.Day == day)
+                    for(int i=0; i<entities.Count; i++)
                     {
-                        temp.Add(Metrics.getMetricsFromEntity(entities[i]));
-
-                        if (i == entities.Count - 1 ||
-                            entities[i].LastUpdated.Value.Day != entities[i + 1].LastUpdated.Value.Day)
+                        if(entities[i].LastUpdated.Value.Day == currentDate.Day &&
+                            entities[i].LastUpdated.Value.Month == currentDate.Month)
                         {
+                           //adding metrics values  
+                           metrics[currentStep][0] += entities[i].Humidity;
+                           metrics[currentStep][1] += entities[i].Temperature;
+                           metrics[currentStep][2] += entities[i].Noise;
+                           metrics[currentStep][3] += entities[i].CO2;
 
-                            //day of week Monday/Tuesday.....
-                            string dayOfWeek = entities[i].LastUpdated.Value.DayOfWeek.ToString();
-
-                            //index of the day of the week in metrics Monday-0, Tuesday-1, ...
-                            int dayIndex = 0;
-                            switch (dayOfWeek)
-                            {
-                                case "Monday":
-                                    dayIndex = 0;
-                                    break;
-                                case "Tuesday":
-                                    dayIndex = 1;
-                                    break;
-                                case "Wednesday":
-                                    dayIndex = 2;
-                                    break;
-                                case "Thursday":
-                                    dayIndex = 3;
-                                    break;
-                                case "Friday":
-                                    dayIndex = 4;
-                                    break;
-                                case "Saturday":
-                                    dayIndex = 5;
-                                    break;
-                                case "Sunday":
-                                    dayIndex = 6;
-                                    break;
-                            }
-
-                            //adding all measurements for the day
-                            for (int j = 0; j < temp.Count; j++)
-                            {
-
-                                metrics[(dayIndex)][0] += temp[j].Humidity;
-                                metrics[(dayIndex)][1] += temp[j].Temperature;
-                                metrics[(dayIndex)][2] += temp[j].Noise;
-                                metrics[(dayIndex)][3] += temp[j].CO2;
-
-                            }
-
-                            //counting averages of metrics from temp and loading to actual output
-                            for (int k = 0; k < 4; k++)
-                            {
-                                metrics[(dayIndex)][k] /= temp.Count;
-                            }
-
-                            temp.Clear();
-
-                            if (i < entities.Count - 1)
-                            {
-                                //changing the day
-                                day = entities[i + 1].LastUpdated.Value.Day;
-                            }
-
+                            stepMetrics++;
 
                         }
                     }
 
-                    else if (entities[i].LastUpdated.Value.Day != day)
-                    {
-                        //changing the day
-                        day = entities[i + 1].LastUpdated.Value.Day;
-                    }
+                    //counting and rounding average metricsvalues
+                    metrics[currentStep][0] = Math.Round((metrics[currentStep][0] / stepMetrics),2);
+                    metrics[currentStep][1] = Math.Round((metrics[currentStep][1] / stepMetrics), 2);
+                    metrics[currentStep][2] = Math.Round((metrics[currentStep][2] / stepMetrics), 2);
+                    metrics[currentStep][3] = Math.Round((metrics[currentStep][3] / stepMetrics), 2);
+
+                    //setting step metrics back to 0
+                    //incrementing currentStep
+                    //incrementing currentDate
+                    stepMetrics = 0;
+                    currentStep++;
+                    currentDate = currentDate.AddDays(1);
+
                 }
 
+               
                 statistics = new WeeklyStatistics { StartDate = start, EndDate = end, Year = start.Year };
                 statistics.RoomID = entities[0].R_ID;
                 statistics.Metrics = metrics;
