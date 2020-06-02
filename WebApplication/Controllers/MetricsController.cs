@@ -28,30 +28,10 @@ namespace WebApplication.Controllers
             MetricsEntity me = await repository.getLastUpdatedMetrics();
 
             Metrics metrics;
-            
-            if (me != null) {
-
-                metrics = Metrics.getMetricsFromEntity(me);
-                return Ok(metrics);
-            }
-            else
-            {
-                return NotFound();
-            }
-            
-
-
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Metrics>> onGet(int id)
-        {
-            MetricsEntity me = await repository.getMetricsById(id);
-
-            Metrics metrics;
 
             if (me != null)
             {
+
                 metrics = Metrics.getMetricsFromEntity(me);
                 return Ok(metrics);
             }
@@ -59,6 +39,11 @@ namespace WebApplication.Controllers
             {
                 return NotFound();
             }
+
+
+
         }
+
+
     }
 }
