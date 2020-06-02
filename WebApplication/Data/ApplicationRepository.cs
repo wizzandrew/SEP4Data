@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using WebApplication.Data.Entities;
-
+using WebApplication.Models;
 
 namespace WebApplication.Data
 {
@@ -17,17 +17,18 @@ namespace WebApplication.Data
             _context = context;
         }
 
-
         //MetricsController---------------------------------------------------------------------------
         public async Task<MetricsEntity> getLastUpdatedMetrics()
+        {    
+            //finding MetricsEntity with the biggest id -> last updated
+            return await _context.Metrics.FindAsync(_context.Metrics.Max(max => max.MetricsID));
+      
+        }
+
+        public async Task<MetricsEntity> getMetricsById(int id)
         {
-            //finding MetricsEntity with the latest updated date 
-            if(_context.Metrics.Any(m => m.LastUpdated.HasValue))
-            {
-                DateTime latestDate = _context.Metrics.Where(m => m.LastUpdated.HasValue).Max(max => max.LastUpdated).Value;
-                return await _context.Metrics.Where(m => m.LastUpdated.Value == latestDate).FirstAsync();
-            }
-            return null;
+            //finding MetricsEntity with the corresponding id using LINQ
+            return await _context.Metrics.FindAsync(id);
         }
 
         //MetricsController---------------------------------------------------------------------------
@@ -37,12 +38,9 @@ namespace WebApplication.Data
 
         public async Task<List<MetricsEntity>> getMetricsForTimePeriod(DateTime start, DateTime end)
         {
-            if(_context.Metrics.Any(m => m.LastUpdated.HasValue))
-            {
-                return await _context.Metrics.Where(m =>  m.LastUpdated.Value >= start &&
+            return await _context.Metrics.Where(m =>  m.LastUpdated.Value >= start &&
                                                       m.LastUpdated.Value <= end).ToListAsync();
-            }
-            return null;          
+            
         }
 
         //StatisticsController-----------------------------------------------------------------------------
@@ -52,11 +50,7 @@ namespace WebApplication.Data
 
         public async Task<UserEntity> GetUserEntity(string email)
         {
-            if(_context.Users.Any(u => u.Email.Length > 0)) 
-            {
-                return await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(email));
-            }
-            return null;
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(email));
         }
 
         //UserController----------------------------------------------------------------------------
