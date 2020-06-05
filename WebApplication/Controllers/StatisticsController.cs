@@ -23,9 +23,9 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("length")]
-        public async Task<double> OnGetLength([FromQuery]DateTime start, [FromQuery]DateTime end)
+        public async Task<double> OnGetLength([FromQuery]DateTime start, [FromQuery]DateTime end, int productId)
         {
-            List<MetricsEntity> entities = await repository.getMetricsForTimePeriod(start, end);
+            List<MetricsEntity> entities = await repository.getMetricsForTimePeriod(start, end, productId);
 
             return entities.Count;
 
@@ -34,10 +34,10 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("weekly")]
-        public async Task<ActionResult<WeeklyStatistics>> OnGetWeekly([FromQuery]DateTime start, [FromQuery]DateTime end)
+        public async Task<ActionResult<WeeklyStatistics>> OnGetWeekly([FromQuery]DateTime start, [FromQuery]DateTime end, [FromQuery] int productID)
         {
 
-            if ((start != null && end != null) &&
+            if ((start != null && end != null && productID > 0) &&
                 ((end - start).TotalDays >= 1 && (end - start).TotalDays <= 7))
             {
 
@@ -46,7 +46,7 @@ namespace WebApplication.Controllers
                 var startDate = new DateTime(start.Year, start.Month, start.Day, 0, 0, 0);
                 var endDate = new DateTime(end.Year, end.Month, end.Day, 23, 59, 59);
 
-                WeeklyStatistics statistics = await GetWeeklyStatistics(startDate, endDate);
+                WeeklyStatistics statistics = await GetWeeklyStatistics(startDate, endDate, productID);
 
                 if (statistics != null)
                 {
@@ -137,7 +137,7 @@ namespace WebApplication.Controllers
             }
         }*/
 
-        private async Task<WeeklyStatistics> GetWeeklyStatistics(DateTime start, DateTime end)
+        private async Task<WeeklyStatistics> GetWeeklyStatistics(DateTime start, DateTime end, int productID)
         {
             WeeklyStatistics statistics; //return final object
             double[][] metrics; //future metrics for weekly statistics
@@ -147,7 +147,7 @@ namespace WebApplication.Controllers
             int steps; //days specified in the week period
 
             //getting all metrics entities from db based on start and end dates
-            List<MetricsEntity> entities = await repository.getMetricsForTimePeriod(start, end);
+            List<MetricsEntity> entities = await repository.getMetricsForTimePeriod(start, end, productID);
 
             if (entities.Count > 0)
             {
@@ -202,7 +202,7 @@ namespace WebApplication.Controllers
 
 
                 statistics = new WeeklyStatistics { StartDate = start, EndDate = end, Year = start.Year };
-                statistics.RoomID = entities[0].R_ID;
+                statistics.ProductID = entities[0].ProductID;
                 statistics.Metrics = metrics;
                 statistics.WeekNo = new GregorianCalendar().
                     GetWeekOfYear(start, CalendarWeekRule.FirstDay, DayOfWeek.Monday);

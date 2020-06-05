@@ -7,8 +7,8 @@ namespace WebApplication.Models
 {
     public class WeeklyStatistics
     {
-        public int RoomID { get; set; }
-        public double[][] Metrics {get; set;}
+        public int ProductID { get; set; }
+        public double[][] Metrics { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int WeekNo { get; set; }
