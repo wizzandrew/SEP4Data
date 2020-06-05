@@ -58,18 +58,16 @@ namespace WebApplication.Controllers
 
                 if (user == null)
                 {
-                    repository.CreateAccount(new UserEntity { UserID = UserID, ProductID = ProductID, Token = Token });
-                    return Ok();
+                    var userEntity = new UserEntity { UserID = UserID, ProductID = ProductID, Token = Token };
+                    repository.CreateAccount(userEntity);
+                    return CreatedAtAction("CreateAccount", Models.User.getUserFromEntity(userEntity));
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest("There is already a user with such data");
                 }
             }
-            else
-            {
-                return BadRequest();
-            }
+            return BadRequest("userId or productId or token not applicable");
         }
 
         //DELETE
@@ -82,17 +80,14 @@ namespace WebApplication.Controllers
                 if (user != null)
                 {
                     repository.DeleteUser(user);
-                    return Ok();
+                    return CreatedAtAction("DeleteAccount", Models.User.getUserFromEntity(user));
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest("There is no such a user with the given UserID");
                 }
             }
-            else
-            {
-                return BadRequest();
-            }
+            return BadRequest("userId not applicable");
 
 
         }

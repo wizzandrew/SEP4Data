@@ -44,13 +44,13 @@ namespace WebApplication.Controllers
                 }
                 else
                 {
-                    return NotFound();
+                    return NotFound("There is no metrics for such productId");
                 }
             }
 
             else
             {
-                return NotFound();
+                return NotFound("productId not applicable");
             }
 
         }
@@ -130,9 +130,9 @@ namespace WebApplication.Controllers
                         );*/
 
                 }
-                return BadRequest();
+                return result.Result;
             }
-            return BadRequest();
+            return BadRequest("productId or token not applicable");
 
         }
 

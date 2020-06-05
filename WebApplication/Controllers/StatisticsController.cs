@@ -55,14 +55,12 @@ namespace WebApplication.Controllers
 
                 else
                 {
-                    return BadRequest();
+                    return BadRequest("No weekly statistics for such dates and productId");
                 }
 
             }
-            else
-            {
-                return BadRequest();
-            }
+            return BadRequest("start/end date or productId not applicable");
+
         }
 
         /*[HttpGet("monthly")]
