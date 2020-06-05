@@ -22,7 +22,7 @@ namespace WebApplication.Controllers
         }
 
 
-        [HttpPost("login")]
+        /*[HttpPost("login")]
         public async Task<ActionResult> onPostLogin([FromQuery] string email, [FromQuery] string password)
         {
             if(email == null || password == null)
@@ -45,6 +45,56 @@ namespace WebApplication.Controllers
 
                 return NotFound();
             }
+        }*/
+
+        //POST
+
+        [HttpPost("CreateAccount")]
+        public async Task<ActionResult> OnPostCreateAccount([FromQuery] string UserID, [FromQuery] int ProductID, [FromQuery] string Token)
+        {
+            if (UserID != null && ProductID > 0 && Token != null)
+            {
+                UserEntity user = await repository.GetUserEntity(UserID);
+
+                if (user == null)
+                {                 
+                    repository.CreateAccount(new UserEntity { UserID = UserID, ProductID = ProductID, Token = Token });
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        //DELETE
+        [HttpDelete("DeleteAccount")]
+        public async Task<ActionResult> OnDelete([FromQuery] string UserID)
+        {
+            if (UserID != null)
+            {
+                UserEntity user = await repository.GetUserEntity(UserID);
+                if (user != null)
+                {
+                    repository.DeleteUser(user);
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
+
+
         }
     }
 }

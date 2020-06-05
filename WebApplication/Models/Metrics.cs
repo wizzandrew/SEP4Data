@@ -12,7 +12,7 @@ namespace WebApplication.Models
         public int MetricsID { get; set; }
 
         [Required]
-        public int RoomID { get; set; }
+        public int ProductID { get; set; }
 
         [Required]
         public double Humidity { get; set; }
@@ -37,7 +37,7 @@ namespace WebApplication.Models
                 metrics = new Metrics
                 {
                     MetricsID = metricsEntity.MetricsID,
-                    RoomID = metricsEntity.R_ID,
+                    ProductID = metricsEntity.ProductID,
                     Humidity = metricsEntity.Humidity,
                     Temperature = metricsEntity.Temperature,
                     Noise = metricsEntity.Noise,

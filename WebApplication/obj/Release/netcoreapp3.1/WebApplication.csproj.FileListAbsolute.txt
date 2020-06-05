@@ -114,10 +114,10 @@ D:\!VIA\4th_Semester\SEP4\Work\GIT\SEP4Data\SEP4Data\WebApplication\bin\Release\
 D:\!VIA\4th_Semester\SEP4\Work\GIT\SEP4Data\SEP4Data\WebApplication\obj\Release\netcoreapp3.1\WebApplication.csprojAssemblyReference.cache
 D:\!VIA\4th_Semester\SEP4\Work\GIT\SEP4Data\SEP4Data\WebApplication\obj\Release\netcoreapp3.1\staticwebassets\WebApplication.StaticWebAssets.Manifest.cache
 D:\!VIA\4th_Semester\SEP4\Work\GIT\SEP4Data\SEP4Data\WebApplication\obj\Release\netcoreapp3.1\staticwebassets\WebApplication.StaticWebAssets.xml
-D:\!VIA\4th_Semester\SEP4\Work\GIT\SEP4Data\SEP4Data\WebApplication\obj\Release\netcoreapp3.1\WebApplication.MvcApplicationPartsAssemblyInfo.cache
 D:\!VIA\4th_Semester\SEP4\Work\GIT\SEP4Data\SEP4Data\WebApplication\obj\Release\netcoreapp3.1\WebApplication.AssemblyInfoInputs.cache
 D:\!VIA\4th_Semester\SEP4\Work\GIT\SEP4Data\SEP4Data\WebApplication\obj\Release\netcoreapp3.1\WebApplication.AssemblyInfo.cs
 D:\!VIA\4th_Semester\SEP4\Work\GIT\SEP4Data\SEP4Data\WebApplication\obj\Release\netcoreapp3.1\WebApplication.RazorTargetAssemblyInfo.cache
 D:\!VIA\4th_Semester\SEP4\Work\GIT\SEP4Data\SEP4Data\WebApplication\obj\Release\netcoreapp3.1\WebApplication.csproj.CopyComplete
 D:\!VIA\4th_Semester\SEP4\Work\GIT\SEP4Data\SEP4Data\WebApplication\obj\Release\netcoreapp3.1\WebApplication.dll
 D:\!VIA\4th_Semester\SEP4\Work\GIT\SEP4Data\SEP4Data\WebApplication\obj\Release\netcoreapp3.1\WebApplication.pdb
+D:\!VIA\4th_Semester\SEP4\Work\GIT\SEP4Data\SEP4Data\WebApplication\obj\Release\netcoreapp3.1\WebApplication.MvcApplicationPartsAssemblyInfo.cache
