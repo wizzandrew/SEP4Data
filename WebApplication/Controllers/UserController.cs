@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,73 +20,119 @@ namespace WebApplication.Controllers
         }
 
 
-        /*[HttpPost("login")]
-        public async Task<ActionResult> onPostLogin([FromQuery] string email, [FromQuery] string password)
-        {
-            if(email == null || password == null)
-            {
-                return BadRequest();
-            }
-
-            else
-            {
-                UserEntity userEntity = await repository.GetUserEntity(email);
-
-
-                if(userEntity != null)
-                {
-                    if(userEntity.Password.Equals(password))
-                    {
-                        return Ok("Login succeded");
-                    }
-                }
-
-                return NotFound();
-            }
-        }*/
-
-        //POST
-
+        
+        /// <summary>
+        /// Create user account speciying user Id, product Id and token
+        /// </summary>
+        /// <param name="UserID">Id of the user</param>
+        /// <param name="ProductID">Id of the product</param>
+        /// <param name="Token">Token given to user during registration in google firebase</param>
+        /// <returns>created user object or status code</returns>
+        [ProducesResponseType(typeof(UserEntity), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("CreateAccount")]
         public async Task<ActionResult> OnPostCreateAccount([FromQuery] string UserID, [FromQuery] int ProductID, [FromQuery] string Token)
         {
+            UserEntity user;
+
             if (UserID != null && ProductID > 0 && Token != null)
             {
-                UserEntity user = await repository.GetUserEntity(UserID);
+                try
+                {
+                    user = await repository.GetUserEntity(UserID);
 
-                if (user == null)
-                {
-                    var userEntity = new UserEntity { UserID = UserID, ProductID = ProductID, Token = Token };
-                    repository.CreateAccount(userEntity);
-                    return CreatedAtAction("CreateAccount", Models.User.getUserFromEntity(userEntity));
-                }
-                else
-                {
+                    if (user == null)
+                    {
+
+                        try
+                        {
+                            var res = await repository.CreateAccount(new UserEntity { UserID = UserID, ProductID = ProductID, Token = Token });
+
+                            if (res != null)
+                            {
+                                return Ok("User Created");
+                            }
+                            return BadRequest("Internal server error");
+                        }
+
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                            Console.WriteLine(e.StackTrace);
+                            return StatusCode(500, "Internal server error");
+                        }
+
+                    }
+
                     return BadRequest("There is already a user with such data");
                 }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
+                    return StatusCode(500, "Internal server error");
+                }
+
             }
-            return BadRequest("userId or productId or token not applicable");
+
+            return BadRequest("UserId or ProductId or Token not applicable");
         }
 
-        //DELETE
+        
+
+        /// <summary>
+        /// Deletes user account specifying user Id
+        /// </summary>
+        /// <param name="UserID">Id of the user</param>
+        /// <returns>status code</returns>
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete("DeleteAccount")]
         public async Task<ActionResult> OnDelete([FromQuery] string UserID)
         {
+            UserEntity user;
+
             if (UserID != null)
             {
-                UserEntity user = await repository.GetUserEntity(UserID);
-                if (user != null)
+                try
                 {
-                    repository.DeleteUser(user);
-                    return CreatedAtAction("DeleteAccount", Models.User.getUserFromEntity(user));
-                }
-                else
-                {
-                    return BadRequest("There is no such a user with the given UserID");
-                }
-            }
-            return BadRequest("userId not applicable");
+                    user = await repository.GetUserEntity(UserID);
+                    if (user != null)
+                    {
+                        try
+                        {
+                            var res = await repository.DeleteUser(user);
 
+                            if (res == null)
+                            {
+                                return NoContent();
+                            }
+                            return BadRequest("Internal server error");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                            Console.WriteLine(e.StackTrace);
+                            return StatusCode(500, "Internal server error");
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest("There is no such a user with the given UserID");
+                    }
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
+                    return StatusCode(500, "Internal server error");
+                }
+             
+            }
+
+            return BadRequest("UserId not applicable");
 
         }
     }

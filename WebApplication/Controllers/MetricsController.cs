@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,42 +17,70 @@ namespace WebApplication.Controllers
     public class MetricsController : ControllerBase
     {
         private readonly ApplicationRepository repository;
+        private readonly string firebaseKey;
 
         public MetricsController(ApplicationRepository repository)
         {
             this.repository = repository;
+            firebaseKey = "AAAAcs7khsM:APA91bFFRRvujAgXnb2JTQKfD0QBLCwGPlfQm4bUaMm6TY7kqrhXwq0ik-Lst-KCMItoqIadL8Z_lHlQKvq32wonTWFpVL9_qW00Egt1gwWcyYG3GWaXrraBwoUyfhLHlAbJEpxdjwty";
         }
 
-
+        /// <summary>
+        /// Get last updated metrics soecifying product Id
+        /// </summary>
+        /// <param name="productID">Id of the product</param>
+        /// <returns>Metrics object or status code</returns>
+        [ProducesResponseType(typeof(Metrics), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
         public async Task<ActionResult<Metrics>> onGet([FromQuery] int productID)
         {
+            MetricsEntity me;
 
             if (productID > 0)
             {
-                MetricsEntity me = await repository.getLastUpdatedMetrics(productID);
-
-                Metrics metrics;
-
-                if (me != null)
+                try
                 {
+                    me = await repository.getLastUpdatedMetrics(productID);
 
-                    metrics = Metrics.getMetricsFromEntity(me);
-                    return Ok(metrics);
+                    Metrics metrics;
+
+                    if (me != null)
+                    {
+                        metrics = Metrics.getMetricsFromEntity(me);
+                        return metrics;
+                    }
+                    else
+                    {
+                        return NotFound("There is no metrics for such productId");
+                    }
                 }
-                else
+
+                catch (Exception e)
                 {
-                    return NotFound("There is no metrics for such productId");
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
+                    return StatusCode(500, "Internal server error");
                 }
             }
 
             else
             {
-                return NotFound("productId not applicable");
+                return NotFound("ProductId not applicable");
             }
-
         }
 
+
+        /// <summary>
+        /// Posts notification to google firebase with metrics object specifying product Id and token
+        /// </summary>
+        /// <param name="productID">Id of the product</param>
+        /// <param name="token">Token given to user during registration in google firebase</param>
+        /// <returns>status code</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("sql")]
 
         public async Task<ActionResult> onPostNotification([FromQuery] int productID, [FromQuery] string token)
@@ -63,79 +89,78 @@ namespace WebApplication.Controllers
             {
                 Metrics metrics;
 
-                ActionResult<Metrics> result = await onGet(productID);
-
-                if (result.Result == Ok())
+                try
                 {
-                    //response from server in string format
-                    string responseFromServer = "";
+                    var result = await onGet(productID);
 
-                    //getting value for metrics object to use its attributes for post request body
-                    metrics = result.Value;
-
-                    WebRequest webRequest = WebRequest.Create("https://fcm.googleapis.com/fcm/send");
-                    webRequest.Method = "post";
-                    //serverKey - Key from Firebase cloud messaging server
-                    webRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAAcs7khsM:APA91bFFRRvujAgXnb2JTQKfD0QBLCwGPlfQm4bUaMm6TY7kqrhXwq0ik-Lst-KCMItoqIadL8Z_lHlQKvq32wonTWFpVL9_qW00Egt1gwWcyYG3GWaXrraBwoUyfhLHlAbJEpxdjwty"));
-                    //Sender Id - From firebase project setting
-                    //webRequest.Headers.Add(string.Format(Sender: id ={ 0} ", "XXXXX..));
-                    webRequest.ContentType = "application/json";
-                    var payload = new
+                    if (result.Value != null && result.Value.ProductID == productID)
                     {
+                        //response from server in string format
+                        string responseFromServer = "No response from Android firebase cloud storage";
 
-                        data = new
+                        //getting value for metrics object to use its attributes for post request body
+                        metrics = result.Value;
+
+                        WebRequest webRequest = WebRequest.Create("https://fcm.googleapis.com/fcm/send");
+                        webRequest.Method = "post";
+                        //serverKey - Key from Firebase cloud messaging server
+                        webRequest.Headers.Add(string.Format("Authorization: key={0}", firebaseKey));
+                        //Sender Id - From firebase project setting
+                        //webRequest.Headers.Add(string.Format(Sender: id ={ 0} ", "XXXXX..));
+                        webRequest.ContentType = "application/json";
+                        var payload = new
                         {
-                            MetricsID = metrics.MetricsID,
-                            ProductID = metrics.ProductID,
-                            Humidity = metrics.Humidity,
-                            Temperature = metrics.Temperature,
-                            CO2 = metrics.CO2,
-                            Noise = metrics.Noise,
-                            LastUpdated = metrics.LastUpdated
-                        },
-                        to = "doS5bgkJRFSm7Mg8tY_LOr:APA91bGmrsTdWsKa8Aeq2MzCpB3d46MVtdgqpD7BliDjepzJG3iiYRx0uQcRSU3wy8UsO00ALoIrrzSrmUsNnBwnTkdlaCES1RpS4XB5Qly1qOrPRTfzJ6bBk9SXfWOj3iZnN1CBT2UC",
-                        direct_book_ok = true
-                    };
-
-                    string postBody = JsonConvert.SerializeObject(payload).ToString();
-                    Byte[] byteArray = Encoding.UTF8.GetBytes(postBody);
-                    webRequest.ContentLength = byteArray.Length;
-                    using (Stream dataStream = webRequest.GetRequestStream())
-                    {
-                        dataStream.Write(byteArray, 0, byteArray.Length);
-
-                        using (WebResponse webResponse = webRequest.GetResponse())
-                        {
-                            using (Stream dataStreamResponse = webResponse.GetResponseStream())
+                            data = new
                             {
-                                if (dataStreamResponse != null) using (StreamReader reader = new StreamReader(dataStreamResponse))
-                                    {
-                                        responseFromServer = reader.ReadToEnd().ToString();
-                                        //result.Response = sResponseFromServer;
-                                    }
+                                MetricsID = metrics.MetricsID,
+                                ProductID = metrics.ProductID,
+                                Humidity = metrics.Humidity,
+                                Temperature = metrics.Temperature,
+                                CO2 = metrics.CO2,
+                                Noise = metrics.Noise,
+                                LastUpdated = metrics.LastUpdated
+                            },
+                            to = token,
+                            direct_book_ok = true
+                        };
+
+                        string postBody = JsonConvert.SerializeObject(payload).ToString();
+                        Byte[] byteArray = Encoding.UTF8.GetBytes(postBody);
+                        webRequest.ContentLength = byteArray.Length;
+                        using (Stream dataStream = webRequest.GetRequestStream())
+                        {
+                            dataStream.Write(byteArray, 0, byteArray.Length);
+
+                            using (WebResponse webResponse = webRequest.GetResponse())
+                            {
+                                using (Stream dataStreamResponse = webResponse.GetResponseStream())
+                                {
+                                    if (dataStreamResponse != null) using (StreamReader reader = new StreamReader(dataStreamResponse))
+                                        {
+                                            responseFromServer = reader.ReadToEnd().ToString();
+                                        }
+                                }
+
                             }
                         }
+                        return Ok(responseFromServer);
+
                     }
 
-                    return Ok(responseFromServer);
-
-                    //creating http post request to android endpoint
-                    //metrics = result.Value;
-
-                    /*var client = new HttpClient();
-                    StringContent httpContent = new StringContent(
-                        $"{ 'data': { 'MetricsID': '','ProductID': , 'Humidity' : ,'Temperature' : , 'CO2' : ,'Noise' : ,'LastUpdated' : },'to' : 'TOKEN','direct_book_ok' : true }",
-                        Encoding.UTF8,
-                        "application/json"
-                        );*/
-
+                    return BadRequest("Metrics can not be found for provided productId");
                 }
-                return result.Result;
+
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
+                    return StatusCode(500, "Internal server error");
+                }
             }
-            return BadRequest("productId or token not applicable");
+
+            return BadRequest("ProductId or Token not applicable");
 
         }
-
 
     }
 }
