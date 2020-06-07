@@ -10,7 +10,6 @@ namespace WebApplication.Data
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-
         public DbSet<MetricsEntity> Metrics { get; set; }
         public DbSet<UserEntity> Users { get; set; }
 

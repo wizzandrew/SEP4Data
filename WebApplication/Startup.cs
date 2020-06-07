@@ -31,8 +31,8 @@ namespace WebApplication
                 options.UseSqlServer(Configuration.GetConnectionString("SEP4Database"));
             });
 
-            //repositoryPattern using Scoped Injection for ApplcationRepository class
-            services.AddScoped<ApplicationRepository>();
+            //repositoryPattern using Scoped Injection for ApplcationRepository interface and its implementation
+            services.AddScoped(typeof(IApplicationRepository), typeof(ApplicationRepository));
 
             services.AddControllers();
         }

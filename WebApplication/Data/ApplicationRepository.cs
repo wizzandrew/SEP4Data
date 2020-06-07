@@ -7,9 +7,9 @@ using WebApplication.Data.Entities;
 
 namespace WebApplication.Data
 {
-    public class ApplicationRepository
+    public class ApplicationRepository : IApplicationRepository
     {
-        private readonly ApplicationDbContext _context;
+        public readonly ApplicationDbContext _context;
 
         public ApplicationRepository(ApplicationDbContext context)
         {
@@ -18,6 +18,18 @@ namespace WebApplication.Data
 
 
         //MetricsController---------------------------------------------------------------------------
+
+
+        public async Task<MetricsEntity> getMetricsById(int metricsId)
+        {
+            if(_context.Metrics.Any(m => m.MetricsID > 0))
+            {
+                return await _context.Metrics.FindAsync(metricsId);
+            }
+            return null;
+        }
+
+
         public async Task<MetricsEntity> getLastUpdatedMetrics(int productID)
         {
             //finding MetricsEntity with the latest updated date 

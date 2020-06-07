@@ -16,10 +16,10 @@ namespace WebApplication.Controllers
     [ApiController]
     public class MetricsController : ControllerBase
     {
-        private readonly ApplicationRepository repository;
-        private readonly string firebaseKey;
+        public readonly IApplicationRepository repository;
+        public readonly string firebaseKey;
 
-        public MetricsController(ApplicationRepository repository)
+        public MetricsController(IApplicationRepository repository)
         {
             this.repository = repository;
             firebaseKey = "AAAAcs7khsM:APA91bFFRRvujAgXnb2JTQKfD0QBLCwGPlfQm4bUaMm6TY7kqrhXwq0ik-Lst-KCMItoqIadL8Z_lHlQKvq32wonTWFpVL9_qW00Egt1gwWcyYG3GWaXrraBwoUyfhLHlAbJEpxdjwty";
@@ -73,9 +73,9 @@ namespace WebApplication.Controllers
 
 
         /// <summary>
-        /// Posts notification to google firebase with metrics object specifying product Id and token
+        /// Posts notification to google firebase with metrics object specifying metrics Id and token
         /// </summary>
-        /// <param name="productID">Id of the product</param>
+        /// <param name="metricsID">Id of the metrics</param>
         /// <param name="token">Token given to user during registration in google firebase</param>
         /// <returns>status code</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -83,23 +83,23 @@ namespace WebApplication.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("sql")]
 
-        public async Task<ActionResult> onPostNotification([FromQuery] int productID, [FromQuery] string token)
+        public async Task<ActionResult> onPostNotification([FromQuery] int metricsID, [FromQuery] string token)
         {
-            if (productID > 0 && token != null)
+            if (metricsID > 0 && token != null)
             {
                 Metrics metrics;
 
                 try
                 {
-                    var result = await onGet(productID);
+                    var result = await repository.getMetricsById(metricsID);
 
-                    if (result.Value != null && result.Value.ProductID == productID)
+                    if (result!= null)
                     {
                         //response from server in string format
                         string responseFromServer = "No response from Android firebase cloud storage";
 
                         //getting value for metrics object to use its attributes for post request body
-                        metrics = result.Value;
+                        metrics = Metrics.getMetricsFromEntity(result);
 
                         WebRequest webRequest = WebRequest.Create("https://fcm.googleapis.com/fcm/send");
                         webRequest.Method = "post";

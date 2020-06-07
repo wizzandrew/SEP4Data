@@ -12,9 +12,9 @@ namespace WebApplication.Controllers
     public class UserController : ControllerBase
 
     {
-        private readonly ApplicationRepository repository;
+        public readonly IApplicationRepository repository;
 
-        public UserController(ApplicationRepository repository)
+        public UserController(IApplicationRepository repository)
         {
             this.repository = repository;
         }

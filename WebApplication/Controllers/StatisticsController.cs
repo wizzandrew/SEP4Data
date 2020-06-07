@@ -14,9 +14,9 @@ namespace WebApplication.Controllers
     [ApiController]
     public class StatisticsController : ControllerBase
     {
-        private readonly ApplicationRepository repository;
+        public readonly IApplicationRepository repository;
 
-        public StatisticsController(ApplicationRepository repository)
+        public StatisticsController(IApplicationRepository repository)
         {
             this.repository = repository;
         }
