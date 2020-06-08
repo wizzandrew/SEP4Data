@@ -82,12 +82,13 @@ namespace WebApplication.Controllers
         
 
         /// <summary>
-        /// Deletes user account specifying user Id
+        /// Delete user account specifying user Id
         /// </summary>
         /// <param name="UserID">Id of the user</param>
         /// <returns>status code</returns>
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete("DeleteAccount")]
         public async Task<ActionResult> OnDeleteAccount([FromQuery] string UserID)
@@ -120,7 +121,7 @@ namespace WebApplication.Controllers
                     }
                     else
                     {
-                        return BadRequest("There is no such a user with the given UserID");
+                        return NotFound("There is no such a user with the given UserID");
                     }
                 }
                 catch(Exception e)

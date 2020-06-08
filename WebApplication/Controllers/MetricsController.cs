@@ -31,6 +31,7 @@ namespace WebApplication.Controllers
         /// <param name="productID">Id of the product</param>
         /// <returns>Metrics object or status code</returns>
         [ProducesResponseType(typeof(Metrics), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
@@ -67,19 +68,20 @@ namespace WebApplication.Controllers
 
             else
             {
-                return NotFound("ProductId not applicable");
+                return BadRequest("ProductId not applicable");
             }
         }
 
 
         /// <summary>
-        /// Posts notification to google firebase with metrics object specifying metrics Id and token
+        /// Post notification to google firebase with metrics object specifying metrics Id and token
         /// </summary>
         /// <param name="metricsID">Id of the metrics</param>
         /// <param name="token">Token given to user during registration in google firebase</param>
         /// <returns>status code</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("sql")]
 
@@ -145,7 +147,7 @@ namespace WebApplication.Controllers
 
                     }
 
-                    return BadRequest("Metrics can not be found for provided metricsID");
+                    return NotFound("Metrics can not be found for provided metricsID");
                 }
 
                 catch (Exception e)

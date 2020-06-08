@@ -30,6 +30,7 @@ namespace WebApplication.Controllers
         ///<returns>A weekly statistics object or status code</returns>
         [ProducesResponseType(typeof(WeeklyStatistics), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("weekly")]
         public async Task<ActionResult<WeeklyStatistics>> OnGetWeekly([FromQuery]DateTime start, [FromQuery]DateTime end, [FromQuery] int productID)
@@ -56,7 +57,7 @@ namespace WebApplication.Controllers
 
                     else
                     {
-                        return BadRequest("No weekly statistics for such dates and productId");
+                        return NotFound("No weekly statistics for such dates and productId");
                     }
                 }
 
