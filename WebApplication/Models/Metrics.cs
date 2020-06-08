@@ -28,7 +28,7 @@ namespace WebApplication.Models
 
         public DateTime LastUpdated { get; set; }
 
-        public static Metrics getMetricsFromEntity(MetricsEntity metricsEntity)
+        public static Metrics GetMetricsFromEntity(MetricsEntity metricsEntity)
         {
             Metrics metrics;
 

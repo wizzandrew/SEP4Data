@@ -13,24 +13,6 @@ namespace WebApplication.Models
         public string Token { get; set; }
 
         public int ProductID { get; set; }
-
-
-        public static User getUserFromEntity(UserEntity userEntity)
-        {
-            User user;
-
-            if (userEntity != null)
-            {
-                user = new User
-                {
-                    UserID = userEntity.UserID,
-                    Token = userEntity.Token,
-                    ProductID = userEntity.ProductID,
-
-                };
-                return user;
-            }
-            return null;
-        }
+        
     }
 }

@@ -90,7 +90,7 @@ namespace WebApplication.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete("DeleteAccount")]
-        public async Task<ActionResult> OnDelete([FromQuery] string UserID)
+        public async Task<ActionResult> OnDeleteAccount([FromQuery] string UserID)
         {
             UserEntity user;
 
@@ -103,7 +103,7 @@ namespace WebApplication.Controllers
                     {
                         try
                         {
-                            var res = await repository.DeleteUser(user);
+                            var res = await repository.DeleteAccount(user);
 
                             if (res == null)
                             {

@@ -93,7 +93,7 @@ namespace WebApplication.Controllers
             try
             {
                 //getting all metrics entities from db based on start and end dates
-                entities = await repository.getMetricsForTimePeriod(start, end, productID);
+                entities = await repository.GetMetricsForTimePeriod(start, end, productID);
 
                 if (entities.Count > 0)
                 {

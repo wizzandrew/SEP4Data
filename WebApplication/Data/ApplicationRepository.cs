@@ -20,7 +20,7 @@ namespace WebApplication.Data
         //MetricsController---------------------------------------------------------------------------
 
 
-        public async Task<MetricsEntity> getMetricsById(int metricsId)
+        public async Task<MetricsEntity> GetMetricsById(int metricsId)
         {
             if(_context.Metrics.Any(m => m.MetricsID > 0))
             {
@@ -30,7 +30,7 @@ namespace WebApplication.Data
         }
 
 
-        public async Task<MetricsEntity> getLastUpdatedMetrics(int productID)
+        public async Task<MetricsEntity> GetLastUpdatedMetrics(int productID)
         {
             //finding MetricsEntity with the latest updated date 
             if (_context.Metrics.Any(m => m.ProductID == productID && m.LastUpdated.HasValue))
@@ -50,7 +50,7 @@ namespace WebApplication.Data
 
         //StatisticsController----------------------------------------------------------------------------
 
-        public async Task<List<MetricsEntity>> getMetricsForTimePeriod(DateTime start, DateTime end, int productID)
+        public async Task<List<MetricsEntity>> GetMetricsForTimePeriod(DateTime start, DateTime end, int productID)
         {
             if (_context.Metrics.Any(m => m.ProductID == productID &&  m.LastUpdated.HasValue))
             {
@@ -86,7 +86,7 @@ namespace WebApplication.Data
             return await GetUserEntity(user.UserID);
         }
 
-        public async Task<UserEntity> DeleteUser(UserEntity user)
+        public async Task<UserEntity> DeleteAccount(UserEntity user)
         {
             _context.Users.Remove(user);
             _context.SaveChanges();

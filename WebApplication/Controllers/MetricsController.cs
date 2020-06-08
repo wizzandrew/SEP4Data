@@ -34,7 +34,7 @@ namespace WebApplication.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<ActionResult<Metrics>> onGet([FromQuery] int productID)
+        public async Task<ActionResult<Metrics>> OnGet([FromQuery] int productID)
         {
             MetricsEntity me;
 
@@ -42,13 +42,13 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    me = await repository.getLastUpdatedMetrics(productID);
+                    me = await repository.GetLastUpdatedMetrics(productID);
 
                     Metrics metrics;
 
                     if (me != null)
                     {
-                        metrics = Metrics.getMetricsFromEntity(me);
+                        metrics = Metrics.GetMetricsFromEntity(me);
                         return metrics;
                     }
                     else
@@ -83,7 +83,7 @@ namespace WebApplication.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("sql")]
 
-        public async Task<ActionResult> onPostNotification([FromQuery] int metricsID, [FromQuery] string token)
+        public async Task<ActionResult> OnPostNotification([FromQuery] int metricsID, [FromQuery] string token)
         {
             if (metricsID > 0 && token != null)
             {
@@ -91,7 +91,7 @@ namespace WebApplication.Controllers
 
                 try
                 {
-                    var result = await repository.getMetricsById(metricsID);
+                    var result = await repository.GetMetricsById(metricsID);
 
                     if (result!= null)
                     {
@@ -99,14 +99,12 @@ namespace WebApplication.Controllers
                         string responseFromServer = "No response from Android firebase cloud storage";
 
                         //getting value for metrics object to use its attributes for post request body
-                        metrics = Metrics.getMetricsFromEntity(result);
+                        metrics = Metrics.GetMetricsFromEntity(result);
 
                         WebRequest webRequest = WebRequest.Create("https://fcm.googleapis.com/fcm/send");
                         webRequest.Method = "post";
-                        //serverKey - Key from Firebase cloud messaging server
+                        //firebaseKey - Key from Firebase cloud messaging server
                         webRequest.Headers.Add(string.Format("Authorization: key={0}", firebaseKey));
-                        //Sender Id - From firebase project setting
-                        //webRequest.Headers.Add(string.Format(Sender: id ={ 0} ", "XXXXX..));
                         webRequest.ContentType = "application/json";
                         var payload = new
                         {
