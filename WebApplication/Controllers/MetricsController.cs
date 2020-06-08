@@ -26,7 +26,7 @@ namespace WebApplication.Controllers
         }
 
         /// <summary>
-        /// Get last updated metrics soecifying product Id
+        /// Get last updated metrics specifying product Id
         /// </summary>
         /// <param name="productID">Id of the product</param>
         /// <returns>Metrics object or status code</returns>
@@ -145,7 +145,7 @@ namespace WebApplication.Controllers
 
                     }
 
-                    return BadRequest("Metrics can not be found for provided productId");
+                    return BadRequest("Metrics can not be found for provided metricsID");
                 }
 
                 catch (Exception e)
@@ -156,7 +156,7 @@ namespace WebApplication.Controllers
                 }
             }
 
-            return BadRequest("ProductId or Token not applicable");
+            return BadRequest("MetricsId or Token not applicable");
 
         }
 
